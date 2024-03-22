@@ -1,0 +1,19 @@
+[project]
+name = "gunicorn-json-logger"
+version = "0.0.0"
+description = "A JSON logger class for Gunicorn that that quacks like `gunicorn.glogging.Logger`"
+authors = [
+    {name = "Kurt Abersold", email = "kurtabersold@gmail.com"},
+]
+dependencies = []
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+distribution = true

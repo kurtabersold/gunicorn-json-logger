@@ -1,0 +1,24 @@
+# https://github.com/pdm-project/setup-pdm
+name: Python Tests
+
+on: [ push, pull_request ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [ "3.9", "3.10", "3.11", "3.12" ]
+        os: [ ubuntu-latest, macOS-latest ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        run: pdm install --dev
+      - name: Run tests
+        run: pdm run pytest

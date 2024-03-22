@@ -17,3 +17,30 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[tool.pdm.dev-dependencies]
+dev = [
+    "commitizen>=3.20.0",
+    "pre-commit>=3.6.2",
+    "pytest>=8.1.1",
+    "pytest-cov>=4.1.0",
+    "pytest-ruff>=0.3.1",
+    "ruff>=0.3.4",
+]
+
+[tool.ruff]
+line-length = 99
+
+[tool.pytest.ini_options]
+addopts = "--ruff --ruff-format --cov=src/gunicorn_json_logger --cov-report=term-missing"
+
+[tool.coverage.run]
+branch = true
+
+[tool.commitizen]
+name = "cz_conventional_commits"
+tag_format = "$version"
+version_scheme = "pep440"
+version_provider = "pep621"
+update_changelog_on_bump = true
+major_version_zero = true

@@ -15,6 +15,8 @@ import threading
 import time
 import traceback
 
+import pythonjsonlogger.jsonlogger
+
 logging.Logger.manager.emittedNoHandlerWarning = 1  # noqa
 
 
@@ -91,7 +93,7 @@ CONFIG_DEFAULTS = {
         "generic": {
             "format": "%(asctime)s [%(process)d] [%(levelname)s] %(message)s",
             "datefmt": "[%Y-%m-%d %H:%M:%S %z]",
-            "class": "logging.Formatter",
+            "class": "pythonjsonlogger.jsonlogger.JsonFormatter",
         }
     },
 }
@@ -200,6 +202,10 @@ class Logger(object):
         self.lock = threading.Lock()
         self.cfg = cfg
         self.setup(cfg)
+        try:
+            self.cfg.json_access_log_format = json.loads(self.cfg.access_log_format)
+        except json.JSONDecodeError as exc:
+            raise RuntimeError(str(exc))
 
     def setup(self, cfg):
         self.loglevel = self.LOG_LEVELS.get(cfg.loglevel.lower(), logging.INFO)
@@ -216,7 +222,9 @@ class Logger(object):
             os.dup2(self.logfile.fileno(), sys.stderr.fileno())
 
         self._set_handler(
-            self.error_log, cfg.errorlog, logging.Formatter(self.error_fmt, self.datefmt)
+            self.error_log,
+            cfg.errorlog,
+            pythonjsonlogger.jsonlogger.JsonFormatter(self.error_fmt, self.datefmt),
         )
 
         # set gunicorn.access handler
@@ -224,7 +232,7 @@ class Logger(object):
             self._set_handler(
                 self.access_log,
                 cfg.accesslog,
-                fmt=logging.Formatter(self.access_fmt),
+                fmt=pythonjsonlogger.jsonlogger.JsonFormatter(self.access_fmt),
                 stream=sys.stdout,
             )
 
@@ -363,7 +371,8 @@ class Logger(object):
         safe_atoms = self.atoms_wrapper_class(self.atoms(resp, req, environ, request_time))
 
         try:
-            self.access_log.info(self.cfg.access_log_format, safe_atoms)
+            log_dict = {k: v % safe_atoms for k, v in self.cfg.json_access_log_format.items()}
+            self.access_log.info(log_dict)
         except Exception:
             self.error(traceback.format_exc())
 

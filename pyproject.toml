@@ -5,7 +5,9 @@ description = "A JSON logger class for Gunicorn that that quacks like `gunicorn.
 authors = [
     {name = "Kurt Abersold", email = "kurtabersold@gmail.com"},
 ]
-dependencies = []
+dependencies = [
+    "python-json-logger>=2.0.7",
+]
 requires-python = ">=3.9"
 readme = "README.md"
 license = {text = "MIT"}
@@ -17,6 +19,9 @@ build-backend = "pdm.backend"
 
 [tool.pdm]
 distribution = true
+
+[tool.pdm.build]
+excludes = ["tests"]
 
 [tool.pdm.dev-dependencies]
 dev = [

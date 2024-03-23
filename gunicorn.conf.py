@@ -1,25 +1,11 @@
-# gunicorn-json-logger
-
-A JSON logger class for [Gunicorn](https://docs.gunicorn.org/en/stable/settings.html#logger-class) that that quacks like `gunicorn.glogging.Logger`
-
-Powered by [python-json-logger](https://github.com/madzak/python-json-logger)
-
-## Usage
-
-In [`gunicorn.conf.py`](./gunicorn.conf.py), update the following:
-* `accesslog` to `"-"`
-* `access_log_format` to a json encoded string
-* `logger_class` to `gunicorn_json_logger.jsonlogger.Logger`
-* Optionally update `logconfig_dict` as shown [below](#Customization) to customer the formatter.
-
-Example:
-```python
-# gunicorn.conf.py
+# Example gunicorn config
 import json
 
+wsgi_app = "tests:app"
 accesslog = "-"
 access_log_format = json.dumps(
     {
+        # https://docs.gunicorn.org/en/stable/settings.html#access-log-format
         "message": "%(r)s",
         "remote_address": "%(h)s",
         "user_name": "%(u)s",
@@ -47,20 +33,9 @@ access_log_format = json.dumps(
         "ENVIRONMENT_VARIABLE": "%({server_software}e)s",
     }
 )
+errorlog = "-"
+loglevel = "debug"
 logger_class = "gunicorn_json_logger.jsonlogger.Logger"
-```
-
-Refer to [Gunicorn documentation](https://docs.gunicorn.org/en/stable/settings.html) for additional settings.
-
-## Customization
-If you would like to customize the formatter, update `logconfig_dict` with  [configuration dictionary schema](https://docs.python.org/3/library/logging.config.html#logging-config-dictschema).
-The primary use case is passing `pythonjsonlogger.jsonlogger.JsonFormatter` [constructor arguments](https://github.com/madzak/python-json-logger/blob/master/src/pythonjsonlogger/jsonlogger.py#L124-L144) to formatter instances.
-
-This example adds the `json_indent` argument to pretty-prints the logs, and the `timestamp` argument to add an ISO-8601 timestamp to log messages.
-
-
-```python
-# gunicorn.conf.py
 logconfig_dict = {
     "version": 1,
     "formatters": {
@@ -115,4 +90,3 @@ logconfig_dict = {
     "incremental": False,
     "disable_existing_loggers": False,
 }
-```

@@ -1,6 +1,6 @@
 [project]
 name = "gunicorn-json-logger"
-version = "0.0.0"
+version = "0.1.0"
 description = "A JSON logger class for Gunicorn that that quacks like `gunicorn.glogging.Logger`"
 authors = [
     {name = "Kurt Abersold", email = "kurtabersold@gmail.com"},

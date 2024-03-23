@@ -1,0 +1,28 @@
+on:
+  push:
+    tags:
+      - '*'
+
+name: Create Release
+# https://github.com/softprops/action-gh-release
+# https://pdm-project.org/latest/usage/publish/
+jobs:
+  build-and-release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup PDM
+        uses: pdm-project/setup-pdm@v4
+      - name: Create Build
+        run: pdm build
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: CHANGELOG.md
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
